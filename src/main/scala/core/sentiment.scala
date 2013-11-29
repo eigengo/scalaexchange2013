@@ -6,5 +6,7 @@ import scala.io.Source
 import scala.collection.parallel.ParSet
 
 class SentimentAnalysisActor extends Actor {
-  def receive: Receive = ???
+  def receive: Receive = {
+    case t: Tweet => println(t)
+  }
 }
