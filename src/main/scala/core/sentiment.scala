@@ -33,6 +33,52 @@ trait SimpleSentimentOutput extends SentimentOutput {
   def outputCount(values: List[Iterable[(Category, Int)]]): Unit = println(values)
 }
 
+trait AnsiConsoleSentimentOutput extends SentimentOutput {
+
+  object AnsiControls {
+    val EraseDisplay = "\033[2J\033[;H"
+    val EraseLine    = "\033[2K\033[;H"
+  }
+
+  object AnsiColors {
+    val Reset  = "\u001B[0m"
+    val Bold   = "\u001B[1m"
+
+    val Red    = "\u001B[31m"
+    val Yellow = "\u001B[33m"
+    val Cyan   = "\u001B[36m"
+    val White  = "\u001B[37m"
+
+    val Green  = "\u001B[32m"
+    val Purple = "\u001B[35m"
+    val Blue   = "\u001B[34m"
+
+    val allColors = List(White, Purple, Blue, Red, Yellow, Cyan, Green)
+  }
+
+  val categoryPadding = 50
+  val consoleWidth = 80
+
+  println(AnsiControls.EraseDisplay)
+
+  def outputCount(allValues: List[Iterable[(Category, Int)]]): Unit = {
+    print(AnsiControls.EraseDisplay)
+    allValues.foreach { values =>
+      values.zipWithIndex.foreach {
+        case ((k, v), i) =>
+          val color = AnsiColors.allColors(i % AnsiColors.allColors.size)
+          print(color)
+          print(AnsiColors.Bold)
+          print(k)
+          print(" " * (categoryPadding - k.length))
+          print(AnsiColors.Reset)
+          println(v)
+      }
+      println("-" * consoleWidth)
+    }
+  }
+}
+
 class SentimentAnalysisActor extends Actor {
   this: SentimentSets with SentimentOutput =>
 
