@@ -14,3 +14,10 @@ import scala.util.Try
 import spray.can.Http
 import akka.io.IO
 
+object TweetStreamerActor {
+  val twitterUri = Uri("https://stream.twitter.com/1.1/statuses/filter.json")
+}
+
+class TweetStreamerActor(uri: Uri, processor: ActorRef) extends Actor {
+  def receive: Receive = ???
+}
