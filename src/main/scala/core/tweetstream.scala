@@ -19,5 +19,15 @@ object TweetStreamerActor {
 }
 
 class TweetStreamerActor(uri: Uri, processor: ActorRef) extends Actor {
-  def receive: Receive = ???
+  val io = IO(Http)(context.system)
+
+  def receive: Receive = {
+    case query: String =>
+      val post = HttpEntity(ContentType(MediaTypes.`application/x-www-form-urlencoded`), s"track=$query")
+      val rq = HttpRequest(HttpMethods.POST, uri = uri, entity = post)
+      sendTo(io).withResponsesReceivedBy(self)(rq)
+    case ChunkedResponseStart(_) =>
+    case MessageChunk(entity, _) =>
+    case _ =>
+  }
 }
