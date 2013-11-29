@@ -14,6 +14,21 @@ import scala.util.Try
 import spray.can.Http
 import akka.io.IO
 
+trait TwitterAuthorization {
+  def authorize: HttpRequest => HttpRequest
+}
+
+trait OAuthTwitterAuthorization extends TwitterAuthorization {
+  import OAuth._
+  val home = System.getProperty("user.home")
+  val lines = Source.fromFile(s"$home/.twitter/scalaexchange2013").getLines().toList
+
+  val consumer = Consumer(lines(0), lines(1))
+  val token = Token(lines(2), lines(3))
+
+  val authorize: (HttpRequest) => HttpRequest = oAuthAuthorizer(consumer, token)
+}
+
 trait TweetMarshaller {
 
   implicit object TweetUnmarshaller extends Unmarshaller[Tweet] {
@@ -57,12 +72,13 @@ object TweetStreamerActor {
 }
 
 class TweetStreamerActor(uri: Uri, processor: ActorRef) extends Actor with TweetMarshaller {
+  this: TwitterAuthorization =>
   val io = IO(Http)(context.system)
 
   def receive: Receive = {
     case query: String =>
       val post = HttpEntity(ContentType(MediaTypes.`application/x-www-form-urlencoded`), s"track=$query")
-      val rq = HttpRequest(HttpMethods.POST, uri = uri, entity = post)
+      val rq = HttpRequest(HttpMethods.POST, uri = uri, entity = post) ~> authorize
       sendTo(io).withResponsesReceivedBy(self)(rq)
     case ChunkedResponseStart(_) =>
     case MessageChunk(entity, _) =>

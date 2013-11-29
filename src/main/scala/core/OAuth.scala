@@ -9,5 +9,11 @@ import scala.collection.immutable.TreeMap
 import java.net.URLEncoder
 
 object OAuth {
+  case class Consumer(key: String, secret: String)
+  case class Token(value: String, secret: String)
+
+  def oAuthAuthorizer(consumer: Consumer, token: Token): HttpRequest => HttpRequest = {
+    identity
+  }
 
 }

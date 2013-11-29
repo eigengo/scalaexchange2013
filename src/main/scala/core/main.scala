@@ -10,7 +10,7 @@ object Main extends App {
 
   val system = ActorSystem()
   val sentiment = system.actorOf(Props(new SentimentAnalysisActor))
-  val stream = system.actorOf(Props(new TweetStreamerActor(TweetStreamerActor.twitterUri, sentiment)))
+  val stream = system.actorOf(Props(new TweetStreamerActor(TweetStreamerActor.twitterUri, sentiment) with OAuthTwitterAuthorization))
 
   @tailrec
   private def commandLoop(): Unit = {
