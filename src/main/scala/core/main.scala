@@ -9,7 +9,7 @@ object Main extends App {
   import Commands._
 
   val system = ActorSystem()
-  val sentiment = system.actorOf(Props(new SentimentAnalysisActor))
+  val sentiment = system.actorOf(Props(new SentimentAnalysisActor with CSVLoadedSentimentSets with SimpleSentimentOutput))
   val stream = system.actorOf(Props(new TweetStreamerActor(TweetStreamerActor.twitterUri, sentiment) with OAuthTwitterAuthorization))
 
   @tailrec
