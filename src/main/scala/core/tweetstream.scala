@@ -14,11 +14,18 @@ import scala.util.Try
 import spray.can.Http
 import akka.io.IO
 
+trait TweetMarshaller {
+
+  implicit object TweetUnmarshaller extends Unmarshaller[Tweet] {
+    def apply(entity: HttpEntity): Deserialized[Tweet] = ???
+  }
+}
+
 object TweetStreamerActor {
   val twitterUri = Uri("https://stream.twitter.com/1.1/statuses/filter.json")
 }
 
-class TweetStreamerActor(uri: Uri, processor: ActorRef) extends Actor {
+class TweetStreamerActor(uri: Uri, processor: ActorRef) extends Actor with TweetMarshaller {
   val io = IO(Http)(context.system)
 
   def receive: Receive = {
@@ -28,6 +35,10 @@ class TweetStreamerActor(uri: Uri, processor: ActorRef) extends Actor {
       sendTo(io).withResponsesReceivedBy(self)(rq)
     case ChunkedResponseStart(_) =>
     case MessageChunk(entity, _) =>
+      TweetUnmarshaller(entity) match {
+        case Right(tweet) => processor ! tweet
+        case _            =>
+      }
     case _ =>
   }
 }
