@@ -4,9 +4,7 @@ import akka.actor.ActorSystem
 import org.specs2.mutable.SpecificationLike
 import akka.testkit.{TestActorRef, TestKit, ImplicitSender}
 import domain.Tweet
-import spray.http.{HttpRequest, Uri}
-import spray.can.Http
-import akka.io.IO
+import spray.http.Uri
 
 class TweetStreamerActorSpec extends TestKit(ActorSystem()) with SpecificationLike with ImplicitSender {
   sequential
@@ -21,7 +19,7 @@ class TweetStreamerActorSpec extends TestKit(ActorSystem()) with SpecificationLi
     "should receive the tweets" in {
       val twitterApi = TwitterApi(port)
       tweetStream ! "typesafe"
-      Thread.sleep(1000)
+
       val tweet = expectMsgType[Tweet]
       tweet.text mustEqual "Aggressive Ponytail #freebandnames"
       tweet.user.lang mustEqual "en"

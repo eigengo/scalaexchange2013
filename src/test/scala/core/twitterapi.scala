@@ -5,10 +5,8 @@ import spray.can.Http
 import spray.http._
 import spray.http.HttpRequest
 import spray.http.HttpResponse
-import akka.routing.RoundRobinRouter
 import akka.io.IO
 import scala.io.Source
-import spray.can.server.ServerSettings
 
 class TwitterApi private(system: ActorSystem, port: Int, body: String) {
 

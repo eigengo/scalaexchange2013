@@ -2,8 +2,6 @@ package core
 
 import akka.actor.{Props, ActorSystem}
 import scala.annotation.tailrec
-import spray.can.Http
-import akka.io.IO
 
 object Main extends App {
   import Commands._
